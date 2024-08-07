@@ -2,51 +2,53 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('notes-form');
     const noteInput = document.getElementById('note');
     const resultDiv = document.getElementById('result');
+    const calculateButton = document.getElementById('calculate');
 
     let notas = [];
-    let totalNotas = 0;
-    let somaNotas = 0;
-    let maiorNota = -Infinity;
-    let menorNota = Infinity;
-    let aprovados = 0;
-    let reprovados = 0;
 
     form.addEventListener('submit', (event) => {
         event.preventDefault();
         
         const nota = parseFloat(noteInput.value);
         
-        if (nota === 0) {
-            displayResults();
-            return;
-        }
-
         notas.push(nota);
-        totalNotas++;
-        somaNotas += nota;
-
-        if (nota > maiorNota) {
-            maiorNota = nota;
-        }
-
-        if (nota < menorNota) {
-            menorNota = nota;
-        }
-
-        if (nota >= 7) {
-            aprovados++;
-        } else {
-            reprovados++;
-        }
-
-        // Reset the input field
         noteInput.value = '';
         noteInput.focus();
     });
 
+    calculateButton.addEventListener('click', displayResults);
+
+    function getMaiorNota(notas) {
+        return Math.max(...notas);
+    }
+
+    function getMenorNota(notas) {
+        return Math.min(...notas);
+    }
+
+    function getTotalNotas(notas) {
+        return notas.length;
+    }
+
+    function getMediaNotas(notas) {
+        const somaNotas = notas.reduce((acc, nota) => acc + nota, 0);
+        return somaNotas / notas.length;
+    }
+
+    function getAprovadosReprovados(notas) {
+        const aprovados = notas.filter(nota => nota >= 7).length;
+        const reprovados = notas.length - aprovados;
+        return { aprovados, reprovados };
+    }
+
     function displayResults() {
-        if (totalNotas > 0) {
-            const mediaNotas = somaNotas / totalNotas;
+        if (notas.length > 0) {
+            const maiorNota = getMaiorNota(notas);
+            const menorNota = getMenorNota(notas);
+            const totalNotas = getTotalNotas(notas);
+            const mediaNotas = getMediaNotas(notas);
+            const { aprovados, reprovados } = getAprovadosReprovados(notas);
+
             resultDiv.innerHTML = `
                 <h2>Resultados:</h2>
                 <p><strong>Maior nota:</strong> ${maiorNota.toFixed(2)}</p>
